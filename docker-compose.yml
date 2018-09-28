@@ -1,0 +1,27 @@
+# docker-compose for mediawiki using mariadb
+version: '3.2'
+services:
+  wiki:
+    image: mediawiki
+    #restart: always
+    links:
+      - db
+    ports:
+      - "8000:80"
+    volumes:
+      - ./images:/var/www/html/images
+      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+  db:
+    image: mariadb
+    #restart: always
+    expose:
+      - "3306"
+    environment:
+      MYSQL_DATABASE: my_wiki
+      MYSQL_USER: wiki_user
+      MYSQL_PASSWORD: wiki_password
+      MYSQL_ROOT_PASSWORD: mariadb_secret
+    # fix for volume issues on Docker for Windows
+    command: mysqld --innodb-flush-method=fsync
+    volumes:
+      - ./db:/var/lib/mysql
